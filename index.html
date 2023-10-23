@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-br"> 
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Algoritmo Min e Max</title>
+		<script src="https://cdn.tailwindcss.com"></script>
+		<script src="/js/minmax.js"></script>
+		<script src="/js/settings.js"></script>
+		<script src="/js/draw.js"></script>
+		<script src="/js/tictactoe.js"></script>
+	</head>
+	<body class="bg-slate-900">
+		<div class="flex flex-col h-screen justify-between p-4">
+			<div class="flex justify-end items-between gap-2">
+				<button id="restartButton" class="rounded font-bold text-xl bg-blue-400 p-4">Reiniciar</button>
+			</div>
+			<div class="flex flex-col items-center">
+				<h1 class="text-2xl font-bold text-white mb-2 uppercase">Jogo da Velha</h1>
+				<div id="board-container" class="grid grid-cols-3 gap-4"></div>
+			</div>
+			<div></div>
+		</div>
+	</body>
+</html>
+<script>
+	tictactoe.start();
+	document.getElementById('restartButton').addEventListener('click', () => {
+		tictactoe.start();
+	})
+</script>
