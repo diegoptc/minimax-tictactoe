@@ -59,16 +59,34 @@ const tictactoe = {
 		[]
 	],
 
-	start() {
-		showMessage('');
-		this.currentPlayer = startPlayer;
-		this.gameOver = false;
-		for (let i = 0; i < 3; i++) {
-			this.board[i] = [];
-			for (let j = 0; j < 3; j++) {
-				this.board[i][j] = blankSpace;
+	start(startState) {
+		if (!startState) {
+			for (let i = 0; i < 3; i++) {
+				this.board[i] = [];
+				for (let j = 0; j < 3; j++) {
+					this.board[i][j] = blankSpace;
+				}
+			}
+		} else {
+			let countX = 0;
+			let countO = 0;
+			for (let i = 0; i < 3; i++) {
+				this.board[i] = [];
+				for (let j = 0; j < 3; j++) {
+					if (startState[i][j] == 'X') countX++;
+					else if (startState[i][j] == 'O') countO++
+					this.board[i][j] = startState[i][j];
+				}
+				if (countX > countO) {
+					startPlayer = playerTwo;
+				} else {
+					startPlayer = playerOne;
+				}
 			}
 		}
+		showMessage('');
+		this.gameOver = false;
+		this.currentPlayer = startPlayer;
 		draw(this.board)
 		if (this.currentPlayer.play) {
 			this.currentPlayer.play();

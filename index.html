@@ -13,14 +13,25 @@
 	<body class="bg-slate-900">
 		<div class="flex flex-col h-screen justify-between p-4">
 			<div class="flex justify-end items-between gap-2">
+				<label class="relative inline-flex items-center cursor-pointer">
+					<input id="isAlphaBetaInput" type="checkbox" value="" class="sr-only peer" onchange="alphaBetaChange()">
+					<div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[20px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+					<span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Poda Alpha-Beta</span>
+				</label>
 				<button id="restartButton" class="rounded font-bold text-xl bg-blue-400 p-4">Reiniciar</button>
 				<button id="settingsButton" class="rounded font-bold text-xl bg-teal-400 p-4">Configurações</button>
 			</div>
 			<div id="settings-container" class="flex flex-col items-center gap-2 hidden">
 				<button class="rounded font-bold text-xl bg-blue-400 p-4" onclick="playWithX()">Jogar com X</button>
 				<button class="rounded font-bold text-xl bg-green-400 p-4" onclick="playWithO()">Jogar com O</button>
-				<button class="rounded font-bold text-xl bg-green-400 p-4" onclick="IaVsIa()">IA vs IA</button>
-				<button class="rounded font-bold text-xl bg-teal-400 p-4">Configurar estado inicial</button>
+				<button class="rounded font-bold text-xl bg-orange-700 p-4" onclick="IaVsIa()">IA vs IA</button>
+				<button class="rounded font-bold text-xl bg-teal-400 p-4" onclick="configureStartState()">Configurar estado inicial</button>
+			</div>
+			<div id="startState-container" class="flex flex-col gap-2 items-center hidden">
+				<div id="startState-matrix" class="grid grid-cols-3 gap-4">
+				</div>
+				<button class="rounded font-bold text-xl bg-green-400 p-4" onclick="applySettingsStartState()">Aplicar</button>
+				<button class="rounded font-bold text-xl bg-red-400 p-4" onclick="cancelSettingsStartState()">Cancelar</button>
 			</div>
 			<div class="flex flex-col items-center" id="game-container">
 				<h1 class="text-2xl font-bold text-white mb-2 uppercase">Jogo da Velha</h1>
@@ -33,22 +44,37 @@
 	</body>
 </html>
 <script>
+	let startState = [];
+	let symbolTurn = 'X';
 	const gameContainer = document.getElementById('game-container');
 	const settingsContainer = document.getElementById('settings-container');
+	const startStateContainer = document.getElementById('startState-container')
+	const startStateMatrix = document.getElementById('startState-matrix');
+	const settingsButton = document.getElementById('settingsButton');
 
 	function startGame() {
 		gameContainer.classList.remove('hidden')
 		settingsContainer.classList.add('hidden')
-		tictactoe.start();
+		if (startState && startState.length > 0) {
+			tictactoe.start(startState);
+		} else {
+			tictactoe.start();
+		}
 	}
 
 	startGame();
 
-	document.getElementById('restartButton').addEventListener('click', () => {
+	function restartGame() {
+		changePlayerOneAndTwo(playerIaMax, playerHuman);
+		startState = [];
 		startGame();
+	}
+
+	document.getElementById('restartButton').addEventListener('click', () => {
+		restartGame();
 	})
 
-	document.getElementById('settingsButton').addEventListener('click', () => {
+	settingsButton.addEventListener('click', () => {
 		settingsContainer.classList.remove('hidden')
 		gameContainer.classList.add('hidden')
 	})
@@ -66,5 +92,58 @@
 	function IaVsIa() {
 		changePlayerOneAndTwo(playerIaMax, playerIaMin)
 		startGame();
+	}
+
+	function configureStartState() {
+		startState = [];
+		symbolTurn = 'X';
+		settingsContainer.classList.add('hidden');
+		startStateContainer.classList.remove('hidden');
+		startStateMatrix.innerHTML = '';
+		settingsButton.setAttribute('disabled', true);
+		settingsButton.classList.add('bg-zinc-400')
+
+		for (let i = 0; i < 3; i++) {
+			startState[i] = [];
+			for (let j = 0; j < 3; j++) {
+				startState[i][j] = blankSpace;
+				const node = document.createElement('div');
+				node.classList.add('border-2', 'p-4', 'border-white', 'rounded','text-9xl', 'font-bold', 'text-white', 'text-center', 'cell', 'h-[170px]', 'w-[170px]', 'select-none');
+				node.innerHTML = blankSpace;
+				node.addEventListener('click', () => {
+					if (startState[i][j] == blankSpace) {
+						node.innerHTML = symbolTurn;
+						startState[i][j] = symbolTurn
+						symbolTurn = symbolTurn == 'X' ? 'O' : 'X'
+					}
+				})
+				startStateMatrix.appendChild(node);
+			}
+		}
+	}
+
+	function applySettingsStartState() {
+		settingsButton.removeAttribute('disabled');
+		settingsButton.classList.remove('bg-zinc-400')
+		settingsContainer.classList.remove('hidden');
+		startStateContainer.classList.add('hidden');
+	}
+
+	function cancelSettingsStartState() {
+		settingsButton.removeAttribute('disabled');
+		settingsButton.classList.remove('bg-zinc-400')
+		startState = [];
+		settingsContainer.classList.remove('hidden');
+		startStateContainer.classList.add('hidden');
+	}
+
+	function alphaBetaChange() {
+		const checkbox = document.getElementById('isAlphaBetaInput')
+		if (checkbox.checked) {
+			algorithm = 'alphabeta'
+		} else {
+			algorithm = 'minimax'
+		}
+		restartGame();
 	}
 </script>

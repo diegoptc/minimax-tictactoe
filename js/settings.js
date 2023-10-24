@@ -1,4 +1,10 @@
+let visitedNodes = 0;
+let elapsedTime = 0;
+let algorithm = 'minimax'
+
 function playWithMax() {
+  visitedNodes = 0;
+  elapsedTime = 0;
   const board = [...tictactoe.board];
   let bestScore = -Infinity;
   let bestMove = {};
@@ -7,7 +13,7 @@ function playWithMax() {
     for (let j = 0; j < board[i].length; j++) {
       if (board[i][j] == blankSpace) {
         board[i][j] = this.symbol;
-        const score = minimax(board, emptyCells(board).length, false)
+        const score = algorithm == 'minimax' ? minimax(board, emptyCells(board).length, false) : minimax(board, emptyCells(board).length, false, -Infinity, Infinity)
         board[i][j] = blankSpace;
         if (score > bestScore) {
           bestScore = score;
@@ -16,10 +22,15 @@ function playWithMax() {
       }
     }
   }
-  tictactoe.play(bestMove.i, bestMove.j);
+  showMessage(`Nós visitados: ${visitedNodes}<br>Tempo de Execução: ${elapsedTime}ms`)
+  setTimeout(() => {
+    tictactoe.play(bestMove.i, bestMove.j);
+  }, 1000)
 }
 
 function playWithMin() {
+  visitedNodes = 0;
+  elapsedTime = 0;
   const board = [...tictactoe.board];
   let bestScore = Infinity;
   let bestMove = {};
@@ -28,7 +39,7 @@ function playWithMin() {
     for (let j = 0; j < board[i].length; j++) {
       if (board[i][j] == blankSpace) {
         board[i][j] = this.symbol;
-        const score = minimax(board, emptyCells(board).length, true)
+        const score = algorithm == 'minimax' ? minimax(board, emptyCells(board).length, true) : minimax(board, emptyCells(board).length, true, -Infinity, Infinity)
         board[i][j] = blankSpace;
         if (score < bestScore) {
           bestScore = score;
@@ -37,7 +48,10 @@ function playWithMin() {
       }
     }
   }
-  tictactoe.play(bestMove.i, bestMove.j);
+  showMessage(`Nós visitados: ${visitedNodes}<br>Tempo de Execução: ${elapsedTime}ms`)
+  setTimeout(() => {
+    tictactoe.play(bestMove.i, bestMove.j);
+  }, 1000)
 }
 
 const playerHuman = {
